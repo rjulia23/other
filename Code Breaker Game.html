@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Code Breaker Game</title> 
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" crossorigin="anonymous">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
+
+        <style>
+            .game-container{
+                width:900px; 
+                height:100vh;
+                background-color:white;
+            }
+            .space, .ball{
+                width:50px;
+                height: 50px;
+                border-radius:30px;
+                float:left;
+                box-shadow: 2px 2px 25px rgba(0,0,0,.05);
+            }
+            .space{
+                margin:35px;
+                margin-top:20px;
+                border:grey solid 4px;
+                background-image: radial-gradient(white,lightgrey);
+                border-color: dimgray darkgray darkgray dimgray;
+            }
+            #balls, #spaces{
+                clear: left;
+            }
+            #spaces{
+                margin: auto;
+            }
+
+            .red{
+                /*   border:darkred solid 3px; */
+                background-color:red;
+                background-image: radial-gradient(red, darkred);
+            }
+            .green{
+                /*   border:darkgreen solid 3px; */
+                background-color:green;
+                background-image: radial-gradient(green, darkgreen,darkgreen);
+
+            }
+            .blue{
+                /*   border:darkblue solid 3px; */
+                background-color:blue;
+                background-image: radial-gradient(blue, darkblue,darkblue);
+            }
+            .pink{
+                /*   border:plum solid 3px; */
+                background-color:pink;
+                background-image: radial-gradient(pink, palevioletred);
+            }
+            .black{
+                /*   border:black solid 3px; */
+                background-color:darkgrey;
+                background-image: radial-gradient(darkgrey,grey);
+
+            }
+            .purple{
+                background-color:darkgrey;
+                background-image: radial-gradient(orchid,blueviolet);
+            }
+            .orange{
+                background-color:orange;
+                background-image: radial-gradient(gold,darkorange);
+            }
+
+            .ball-marker{
+                width:30px;
+                height: 30px;
+                border-radius:30px;
+                margin:10px;
+                float: left;
+                position:absolute;
+                background-color:rgba(255,255,255,.3);
+            }
+            .ball-location{
+                width:80px;
+                height:80px;
+                float:left;
+                border:solid lightgrey 1px;
+                background-image: radial-gradient(white,lightgrey);
+                border-radius:60px;
+                padding:15px;
+                margin:20px;
+            }
+
+            #check-button{
+                margin-top:20px;
+                margin-left:20px;
+            }
+            #new-game-button, #directions-button{
+                margin-left:20px;
+                margin-bottom:20px;
+
+            }
+            #previous-tries{
+                clear:left;
+                /*   position:absolute; */
+            }
+            .previous-ball{
+                width:30px;
+                height: 30px;
+                border-radius:30px;
+                margin:0px 45px;
+                float:left;
+                position:relative
+            }
+
+            .number-correct h2{
+                float:left;
+                font-size:20px;
+            }
+            .balls-correct-container{
+                width:40px;
+                height: 40px;
+                margin-top:0px;
+                margin-left:10px;
+                float:left;
+            }
+            .balls-correct,.balls-correct-color, .balls-incorrect{
+                width:11px;
+                height: 11px;
+                margin:2px;
+                border-radius:20px;
+                float:left;
+            }
+            .balls-correct{
+                background-color:black;
+            }
+            .balls-correct-color{
+                background-color:grey;
+            }
+            .balls-incorrect{
+                background-color:lightgrey;
+            }
+
+            .modal .space{
+                margin:7px;
+            }
+            .modal .container>.row{
+                margin-top:20px;
+            }
+            .modal .previous-ball{
+                width:50px;
+                height:50px;
+                margin-left:20px;
+                margin-top:0px;
+                animation-name: moveDirections;
+                animation-duration: 2s;
+                animation-iteration-count: 6;
+                animation-delay: .3s;
+            }
+
+            @keyframes moveDirections {
+                from {margin-left:20px;margin-top:0px;}
+                to {margin-left:-56px;margin-top:7px;}
+            }
+
+        </style>
+    </head>
+    <body>
+        <div class="container game-container">
+            <button id="directions-button" class="btn btn-lg" data-toggle="modal" data-target="#directionsModal">directions</button>
+            <button id="new-game-button" class="btn btn-warning btn-lg" onclick="newGame()">new game</button>
+            <div id="balls">
+                <div class="ball-location"><div class="ball-marker"></div><div id="red" data-value="1" class="ball red"></div></div>
+                <div class="ball-location"><div class="ball-marker"></div><div id="pink" data-value="2" class="ball pink"></div></div>
+                <div class="ball-location"><div class="ball-marker"></div><div id="green" data-value="3" class="ball green"></div></div>
+                <div class="ball-location"><div class="ball-marker"></div><div id="blue" data-value="4" class="ball blue"></div></div>
+                <div class="ball-location"><div class="ball-marker"></div><div id="purple" data-value="5" class="ball purple"></div></div>
+                <div class="ball-location"><div class="ball-marker"></div><div id="orange" data-value="6" class="ball orange"></div></div>
+
+
+
+            </div>
+            <div id="spaces"> 
+                <div id="space1" class="space" data-value="0"></div>
+                <div id="space2" class="space" data-value="1"></div>
+                <div id="space3" class="space" data-value="2"></div>
+                <div id="space4" class="space" data-value="3"></div>
+            </div>
+            <button id="check-button" class="btn btn-success btn-lg" onclick="checkAnswer()">check</button>
+            <div id="previous-tries"></div>
+        </div>
+
+
+        <div class="modal fade" id="directionsModal" tabindex="-1" role="dialog"  aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Directions</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-sm">
+                                    <p>drop the colored marbles into to the smaller grey spaces</p>
+                                </div>
+                                <div class="col-sm">
+                                    <div class="space"></div>
+                                    <div class="previous-ball red"></div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm">
+                                    <p>when all spaces are filled click check answer</p>
+                                </div>
+                                <div class="col-sm">
+                                    <div class="btn btn-success">check</div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-5">
+                                    <p>the game will output what you got correct on the right side of your answer</p>
+                                </div>
+                                <div class="col-7">
+                                    <div class="row">
+                                        <div class="col-2">
+                                            <div style="margin-top:8px;" class="balls-correct"></div>
+                                        </div>
+                                        <div class="col-10">
+                                            right color + right place
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-2">
+                                            <div style="margin-top:8px;" class="balls-correct-color"></div>
+                                        </div>
+                                        <div class="col-10">
+                                            right color + wrong place
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-2">
+                                            <div style="margin-top:8px;" class="balls-incorrect"></div>
+                                        </div>
+                                        <div class="col-10">
+                                            wrong color + wrong place
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm">
+                                    <p>keep trying until you solve the puzzle!</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+
+        <script type="text/javascript">
+            var correctAnswer = [1, 2, 3, 4, 5, 6];
+            var userAnswer = [0, 0, 0, 0];
+            var previousTry = "";
+            var numberCorrect = 0;
+            var colorCorrect = 0;
+            newGame();
+            var emptySpaces = [0, 0, 0, 0];
+
+            $(".ball").draggable({
+                stack: ".ball",
+                revert: "invalid",
+                snap: ".space",
+                snapTolerance: 30,
+                snapMode: "inner",
+                //containment: ".container",
+                stop: function () {
+                    $(this).draggable('option', 'revert', 'invalid');
+                }
+            });
+
+            $(".ball").data({
+                'originalLeft': $(".ball").css('left'),
+                'origionalTop': $(".ball").css('top')
+            });
+
+            $(".ball").click(function () {
+                if ($(this).offset().top != $("#space1").offset().top) {
+                    for (var i = 0; i < emptySpaces.length; i++) {
+                        if (emptySpaces[i] == 0) {
+                            $(this).offset({top: $("#space" + (i + 1)).offset().top, left: $("#space" + (i + 1)).offset().left});
+                            emptySpaces[i] = 1;
+                            break;
+                        }
+                    }
+                } else {
+                    for (var i = 0; i < 4; i++) {
+                        if ($(this).offset().left == $("#space" + (i + 1)).offset().left) {
+                            emptySpaces[i] = 0;
+                        }
+                    }
+                    $(this).css({
+                        'left': $(".ball").data('originalLeft'),
+                        'top': $(".ball").data('origionalTop')
+                    });
+                }
+            });
+
+            $(".space, .ball-location").droppable({
+                classes: {
+                    "ui-droppable-active": "ui-state-active",
+                    "ui-droppable-hover": "ui-state-hover"
+                },
+                drop: function () {
+                    emptySpaces[$(this).attr("data-value")] = 1;
+                }
+            });
+
+            $(".ball").droppable({
+                greedy: true,
+                drop: function (event, ui) {
+                    ui.draggable.draggable('option', 'revert', true);
+                    var tempClass = $(ui.draggable).attr("class");
+                    var tempVal = $(ui.draggable).attr("data-value");
+                    var tempId = $(ui.draggable).attr("id");
+                    $(ui.draggable).attr("class", $(this).attr("class"));
+                    $(this).attr("class", tempClass);
+                    $(ui.draggable).attr("data-value", $(this).attr("data-value"));
+                    $(this).attr("data-value", tempVal);
+                    $(ui.draggable).attr("id", $(this).attr("id"));
+                    $(this).attr("id", tempId);
+                }
+            });
+
+            function checkAnswer() {
+                emptySpaces = [0, 0, 0, 0];
+                checkIfMatch();
+                $("#previous-tries").html(previousTry);
+                $(".ball").css({
+                    'left': $(".ball").data('originalLeft'),
+                    'top': $(".ball").data('origionalTop')
+                });
+                userAnswer = [0, 0, 0, 0];
+                colorCorrect = 0;
+            }
+
+            function newGame() {
+                correctAnswer = [1, 2, 3, 4, 5, 6];
+                emptySpaces = [0, 0, 0, 0];
+                previousTry = "";
+                colorCorrect = 0;
+                numberCorrect = 0;
+                $("#previous-tries").html(previousTry);
+                shuffle(correctAnswer);
+                correctAnswer = correctAnswer.slice(0, 4);
+                console.log(correctAnswer);
+            }
+
+            function shuffle(array) {
+                var i = 0, j = 0, temp = null;
+                for (i = array.length - 1; i > 0; i -= 1) {
+                    j = Math.floor(Math.random() * (i + 1))
+                    temp = array[i]
+                    array[i] = array[j]
+                    array[j] = temp
+                }
+                // array = array.slice(0, 5);
+            }
+
+            function checkIfMatch() {
+                var colors = ["#red", "#green", "#pink", "#blue", "#purple", "#orange"];
+                var curentLine = '';
+                for (var i = 1; i <= 4; i++) {
+                    for (var j = 0; j < colors.length; j++) {
+                        if ($(colors[j]).offset().left == $("#space" + i).offset().left && $(colors[j]).offset().top == $("#space" + i).offset().top) {
+                            userAnswer[i - 1] = parseInt($(colors[j]).attr('data-value'));
+                        }
+                    }
+                    for (var h = 0; h < 4; h++) {
+                        if (userAnswer[i - 1] == correctAnswer[h]) {
+                            colorCorrect++;
+                        }
+                    }
+                    if (userAnswer[i - 1] == correctAnswer[i - 1]) {
+                        numberCorrect++;
+                    }
+                    switch (userAnswer[i - 1]) {
+                        case 1:
+                            curentLine += '<div class="red previous-ball"></div>';
+                            break;
+                        case 2:
+                            curentLine += '<div class="pink previous-ball"></div>';
+                            break;
+                        case 3:
+                            curentLine += '<div class="green previous-ball"></div>';
+                            break;
+                        case 4:
+                            curentLine += '<div class="blue previous-ball"></div>';
+                            break;
+                        case 5:
+                            curentLine += '<div class="purple previous-ball"></div>';
+                            break;
+                        case 6:
+                            curentLine += '<div class="orange previous-ball"></div>';
+                            break;
+                        default:
+                            curentLine += '<div class="black previous-ball"></div>';
+                    }
+                }
+colorCorrect-=numberCorrect;
+                curentLine += '<div class="balls-correct-container">';
+                if (correctAnswer.toString() == userAnswer.toString()) {
+                    for (var i = 0; i < 4; i++) {
+                        curentLine += '<div class="balls-correct"></div>';
+                    }
+                    curentLine += '</div><div class="number-correct"><h2>you win!</h2>';
+                } else {
+                    for (var i = 0; i < 4; i++) {
+                        if (numberCorrect > 0) {
+                            curentLine += '<div class="balls-correct"></div>';
+                            numberCorrect--;
+                        } else if (colorCorrect > 0 && numberCorrect == 0) {
+                            curentLine += '<div class="balls-correct-color"></div>';
+                            colorCorrect--;
+                        } else {
+                            curentLine += '<div class="balls-incorrect"></div>';
+                        }
+
+                    }
+                }
+                curentLine += '</div><div style="width:10px;height:50px;"></div>';
+                previousTry = curentLine + previousTry;
+                numberCorrect = 0;
+            }
+
+        </script>
+    </body>
+</html>
