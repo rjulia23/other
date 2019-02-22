@@ -1,0 +1,83 @@
+#container{
+  width:700px;
+  height:218px;
+  padding:0px 20px;
+  background:#3e3e3e ;
+  border-radius:30px;
+  overflow: hidden;
+  z-index:0;
+  box-shadow:5px 5px 100px darkgrey;
+}
+#top {
+  width:740px;
+  height:218px;
+  position:absolute;
+  z-index:1000;
+  overflow:hidden;
+  margin:0 -20px;
+  border-radius:30px;
+  animation: container-backgound .3s infinite linear alternate-reverse;  
+}
+
+.glitch {
+  position: relative;
+  font-size:190px;
+  font-family:arial;
+  color:white;
+}
+.glitch::before, .glitch::after {
+  color:white;
+  background: #3e3e3e ;
+  clip: rect(0px, 00px, 0px, 0px); 
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index:1;
+}
+.glitch::before {
+  left: 3px;
+  text-shadow: -2px 0 red;
+  animation: glitch-anim-red 3s infinite linear alternate-reverse;
+}
+.glitch::after {
+  left: -3px;
+  text-shadow: 2px 0 blue;
+  animation: glitch-anim-blue 3s infinite linear alternate-reverse;  
+}
+
+
+@keyframes glitch-anim-red {
+  $steps: random(4)+8;
+  @for $i from 0 through $steps {
+    @if $i < random(4) {
+      clip: none;
+  } @else{
+    #{percentage($i*(1/$steps))} {
+      clip: rect(random(100)+px, 9999px, random(250)+px, 0);
+    }
+  }
+  }
+}
+
+@keyframes glitch-anim-blue {
+  $steps: random(4)+8;
+  @for $i from 0 through $steps {
+    @if $i < random(4){
+      clip: none;
+  } @else{
+    #{percentage($i*(1/$steps))} {
+      clip: rect(random(100)+px, 9999px, random(250)+px, 0);
+    }
+  }
+  }
+}
+
+@keyframes container-backgound {
+   0%   {background-image: url("http://api.thumbr.it/whitenoise-361x370.png?background=59595900&noise=9e9c9e&density=76&opacity=33");}
+  33%  {background-image: url("http://api.thumbr.it/whitenoise-361x370.png?background=59595900&noise=9e9c9e&density=63&opacity=30");}
+  66%  {background-image: url("http://api.thumbr.it/whitenoise-361x370.png?background=59595900&noise=9e9c9e&density=68&opacity=39");}
+  100% {background-image: url("http://api.thumbr.it/whitenoise-361x370.png?background=59595900&noise=9e9c9e&density=85&opacity=33");}
+}
